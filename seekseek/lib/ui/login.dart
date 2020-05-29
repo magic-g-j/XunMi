@@ -8,6 +8,7 @@ import 'package:seekseek/entity/user.dart';
 import 'package:seekseek/main.dart';
 import 'package:seekseek/ui/modifypwd.dart';
 import 'package:seekseek/ui/register.dart';
+import 'package:oktoast/oktoast.dart';
 
 import 'home.dart';
 
@@ -28,6 +29,20 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
   }
+
+  AlertDialog dialog = new AlertDialog(
+    content: new Text(
+      "登陆失败：输入不能为空",
+      style: new TextStyle(fontSize: 16.0, color: Colors.red),
+    ),
+  );
+
+  AlertDialog dialog2 = new AlertDialog(
+    content: new Text(
+      "登陆失败：用户名或密码错误",
+      style: new TextStyle(fontSize: 16.0, color: Colors.red),
+    ),
+  );
 
   login() async {
 //    var responseBody;
@@ -128,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
         color: Colors.blueAccent,
         height: 48.0,
         onPressed: (){
+//          showToast("hello world");
           login();
         },
         shape: RoundedRectangleBorder(
@@ -163,7 +179,6 @@ class _LoginPageState extends State<LoginPage> {
         modify,
         loginButton,
         register,
-
       ],
     ),
     );

@@ -12,12 +12,12 @@ class MyApp extends StatelessWidget {
   static int userId = 0;
 
   final routes = <String,WidgetBuilder>{
-      IndexPage.tag:(context)=>IndexPage(),
-      LoginPage.tag:(context)=>LoginPage(),
-      RegisterPage.tag:(context)=>RegisterPage(),
-      ModifypwdPage.tag:(context)=>ModifypwdPage(),
-      HomePage.tag:(context)=>HomePage(),
-      DetailPage.tag:(context)=>DetailPage(),
+    IndexPage.tag:(context)=>IndexPage(),
+    LoginPage.tag:(context)=>LoginPage(),
+    RegisterPage.tag:(context)=>RegisterPage(),
+    ModifypwdPage.tag:(context)=>ModifypwdPage(),
+    HomePage.tag:(context)=>HomePage(),
+    DetailPage.tag:(context)=>DetailPage(),
 //    QuestionPage.tag:(context)=>QuestionPage(),
 //    AnswerPage.tag:(context)=>AnswerPage(),
 //    DetailPage.tag:(context)=>DetailPage(),

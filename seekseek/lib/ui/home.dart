@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.book),
-      title: Text('学科圈'),
+      title: Text('专业圈'),
       //backgroundColor: Colors.orange
     ),
     BottomNavigationBarItem(
