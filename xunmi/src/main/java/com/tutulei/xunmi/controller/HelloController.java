@@ -11,5 +11,4 @@ public class HelloController {
     String Hello(){
         return "Hello Spring boot";
     }
-
 }

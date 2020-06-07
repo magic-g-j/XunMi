@@ -2,6 +2,7 @@ package com.tutulei.xunmi.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -12,10 +13,9 @@ public class ReplyEntity {
     private Byte replyParentType;
     private Integer replyCreator;
     private String replyContent;
-    private Date replyCtime;
+    private Timestamp replyCtime;
     private Integer replyLikes;
     private Integer replyDislikes;
-
     @Id
     @Column(name = "reply_id")
     public int getReplyId() {
@@ -68,11 +68,11 @@ public class ReplyEntity {
 
     @Basic
     @Column(name = "reply_ctime")
-    public Date getReplyCtime() {
+    public Timestamp getReplyCtime() {
         return replyCtime;
     }
 
-    public void setReplyCtime(Date replyCtime) {
+    public void setReplyCtime(Timestamp replyCtime) {
         this.replyCtime = replyCtime;
     }
 

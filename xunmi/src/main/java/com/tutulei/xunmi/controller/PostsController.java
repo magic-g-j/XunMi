@@ -4,7 +4,7 @@ import com.tutulei.xunmi.bean.Posts;
 import com.tutulei.xunmi.entity.HistoryEntity;
 import com.tutulei.xunmi.entity.PostsEntity;
 import com.tutulei.xunmi.repository.*;
-import com.tutulei.xunmi.view.HomeListItem;
+import com.tutulei.xunmi.bean.PostsForList;
 import com.tutulei.xunmi.view.NewPostsMsg;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.repository.query.Param;
@@ -57,7 +57,7 @@ public class PostsController {
         return posts;
     }
 
-    //通过id获取一个帖子访问详情内容
+    //通过id获取一个帖子访问详情内容(会增加访问历史)
     @GetMapping("/getOne")
     public Posts GetOnePosts(@Param("postsId")int postsId,@Param("userId")int userId){
         Posts posts = new Posts();
@@ -70,12 +70,54 @@ public class PostsController {
         posts.setPostsId(-1);
         return posts;
     }
+    //获取某学科圈的帖子列表(按回复时间排序)
+    @GetMapping("/getListForSubject/updateTime")
+    public List<PostsForList>  GetListForSubjectOrderByUpdateTime(@Param("subjectId")int subjectId){
+        List<PostsEntity> postsEntities = repository.findByPostsBelongsOrderByPostsUpdateTimeDesc(subjectId);
+        List<PostsForList> postsForLists = new ArrayList<>();
+        turnToListItem(postsEntities, postsForLists);
+        return  postsForLists;
+    }
+    //获取某学科圈的帖子列表(按开贴时间排序)
+    @GetMapping("/getListForSubject/createTime")
+    public List<PostsForList> GetListForSubjectOrderByCreateTime(@Param("subjectId")int subjectId){
+        List<PostsEntity> postsEntities = repository.findByPostsBelongsOrderByPostsCtimeDesc(subjectId);
+        List<PostsForList> postsForLists = new ArrayList<>();
+        turnToListItem(postsEntities, postsForLists);
+        return  postsForLists;
+    }
+    //获取某用户发的帖子列表（按回复时间）
+    @GetMapping("/getListForMe/updateTime")
+    public List<PostsForList> GetCountForMeOrderByUpdateTime(@Param("userId")int userId){
+        List<PostsEntity> postsEntities = repository.findByPostsCreatorOrderByPostsUpdateTimeDesc(userId);
+        List<PostsForList> postsForLists = new ArrayList<>();
+        turnToListItem(postsEntities, postsForLists);
+        return postsForLists;
+    }
+    //获取某用户发的帖子列表（按发帖时间）
+    @GetMapping("/getListForMe/createTime")
+    public List<PostsForList> GetCountForMeOrderByCreateTime(@Param("userId")int userId){
+        List<PostsEntity> postsEntities = repository.findByPostsCreatorOrderByPostsCtimeDesc(userId);
+        List<PostsForList> postsForLists = new ArrayList<>();
+        turnToListItem(postsEntities, postsForLists);
+        return postsForLists;
+    }
+    //获取某学科圈的帖子总数
+    @GetMapping("/getListForSubject/count")
+    public Integer GetCountForSubject(@Param("subjectId")int subjectId){
+        return repository.countByPostsBelongs(subjectId);
+    }
+    //获取某用户的发帖总数
+    @GetMapping("/getListForMe/count")
+    public Integer GetCountForMe(@Param("userId")int userId){
+        return repository.countByPostsCreator(userId);
+    }
 
     //通过用户id，获取给用户推荐的帖子列表
     //用户推荐规则：根据历史记录中用户访问的帖子，列出频繁访问的学科，推荐这些学科的最新帖子
     @GetMapping("/myList")
-    public List<HomeListItem> GetList(@Param("userId") int userId){
-        List<HomeListItem> homeList = new ArrayList<>();
+    public List<PostsForList> GetList(@Param("userId") int userId){
+        List<PostsForList> homeList = new ArrayList<>();
         List<Integer> SubjectList = historyRepository.findHistorySubjectByHistoryUser(userId);
         while(SubjectList.size()<5){
             SubjectList.add(-11);
@@ -85,16 +127,19 @@ public class PostsController {
             List<PostsEntity> addList = postsRepository.findNewPosts(12-entityList.size());
             entityList.addAll(addList);
         }
-        for(PostsEntity p:entityList){
-            HomeListItem item = new HomeListItem();
+        turnToListItem(entityList, homeList);
+        return homeList;
+    }
+    private void turnToListItem(List<PostsEntity> postsEntities, List<PostsForList> postsForLists) {
+        for(PostsEntity p:postsEntities){
+            PostsForList item = new PostsForList();
             BeanUtils.copyProperties(p,item);
             item.setSubjectName(subjectRepository.findSubjectNameBySubjectId(p.getPostsBelongs()));
             item.setCollections(collectionRepository.findCountByCollectionPosts(p.getPostsBelongs()));
             item.setCreatorName(userRepository.findUserNameByUserId(p.getPostsCreator()));
-            item.setRepliesCount(replyRepository.findCountByPosts(p.getPostsId()));
-            homeList.add(item);
+            item.setRepliesCount(replyRepository.countByReplyParentAndReplyParentType(p.getPostsId(),0));
+            postsForLists.add(item);
         }
-        return homeList;
     }
 
     private void addHistoryRecording(PostsEntity postsEntity,int userId){

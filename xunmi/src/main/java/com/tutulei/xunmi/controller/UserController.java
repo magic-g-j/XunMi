@@ -8,6 +8,8 @@ import com.tutulei.xunmi.validatecode.IVerifyCodeGen;
 import com.tutulei.xunmi.validatecode.SimpleCharVerifyCodeGenImpl;
 import com.tutulei.xunmi.validatecode.VerifyCode;
 import com.tutulei.xunmi.view.LoginMsg;
+import com.tutulei.xunmi.view.ModifyMsg;
+import com.tutulei.xunmi.view.ModifyPwd;
 import com.tutulei.xunmi.view.RegisterMsg;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.repository.query.Param;
@@ -31,7 +33,7 @@ public class UserController {
         UserEntity userEntity = repository.findByUserId(userId);
         if(userEntity != null){
             User user = new User();
-            BeanUtils.copyProperties(userEntity, user);
+            BeanUtils.copyProperties(userEntity,user);
             return user;
         }
         return null;
@@ -84,7 +86,34 @@ public class UserController {
         u.setUserName("用户名或手机号已经被注册！");
         return u;
     }
-
+    //修改用户信息
+    @PostMapping("/modify/msg")
+    User ModifyMsg(@RequestBody ModifyMsg modifyMsg){
+        User user = new User();
+        UserEntity userEntity = repository.findByUserId(modifyMsg.getUserId());
+        if(userEntity!=null){
+            repository.updateUserMsg(modifyMsg.getUserName(),modifyMsg.getUserSex(),modifyMsg.getUserWords(),userEntity.getUserId());
+            BeanUtils.copyProperties(modifyMsg, user);
+            user.setUserId(userEntity.getUserId());
+            return user;
+        }
+        user.setUserId(-1);
+        return user;
+    }
+    //修改密码
+    @PostMapping("/modify/password")
+    boolean ModifyPwd(@RequestBody ModifyPwd modifyPwd){
+        LoginMsg loginMsg = new LoginMsg();
+        loginMsg.setUserPhone(modifyPwd.getUserPhone());
+        loginMsg.setUserPwd(modifyPwd.getUserOldPassword());
+        UserEntity userEntity = repository.findByUserId(modifyPwd.getUserId());
+        if(userEntity!=null && this.Login(loginMsg)!=null){
+            String str = addSaltPWD(modifyPwd.getUserPassword(),modifyPwd.getUserPhone());
+            repository.updateUserPwd(str,userEntity.getUserId());
+            return true;
+        }
+        return false;
+    }
 
 //    @ApiOperation(value = "验证码")
     @GetMapping("/verifyCode")

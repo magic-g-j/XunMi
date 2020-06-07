@@ -11,8 +11,14 @@ import java.util.List;
 public interface PostsRepository extends JpaRepository<PostsEntity,Integer> {
 
     PostsEntity findByPostsId(Integer postsId);
+    Integer countByPostsBelongs(Integer subjectId);
+    List<PostsEntity> findByPostsBelongsOrderByPostsCtimeDesc(Integer subjectId);
+    List<PostsEntity> findByPostsBelongsOrderByPostsUpdateTimeDesc(Integer subjectId);
+    Integer countByPostsCreator(Integer userId);
+    List<PostsEntity> findByPostsCreatorOrderByPostsCtimeDesc(Integer userId);
+    List<PostsEntity> findByPostsCreatorOrderByPostsUpdateTimeDesc(Integer userId);
 
-    @Query(value = "SELECT * FROM posts WHERE TO_DAYS(NOW()) - TO_DAYS(posts_update_time) <= 10 AND posts_id IN(:id1,:id2,:id3,:id4,:id4,:id5) ORDER BY field(posts_id,:id1,:id2,:id3,:id4,:id4,:id5) LIMIT 10;",nativeQuery = true)
+    @Query(value = "SELECT * FROM posts WHERE TO_DAYS(NOW()) - TO_DAYS(posts_update_time) <= 10 AND posts_id IN(:id1,:id2,:id3,:id4,:id4,:id5) ORDER BY field(posts_id,:id1,:id2,:id3,:id4,:id4,:id5) LIMIT 10",nativeQuery = true)
     List<PostsEntity> findRecommendPosts(@Param("id1")Integer id1,@Param("id2")Integer id2,@Param("id3")Integer id3,@Param("id4")Integer id4,@Param("id5")Integer id5);
 
     @Query(value = "select * from posts ORDER BY posts_update_time DESC LIMIT :num",nativeQuery = true)

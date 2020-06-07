@@ -6,12 +6,12 @@ public class History {
     private int historyId;
     private Integer historyPosts;
     private Timestamp historyCtime;
-    private Integer historySubject;
+    private String historySubjectName;
     private String historyTitle;
+
     public int getHistoryId() {
         return historyId;
     }
-
     public void setHistoryId(int historyId) {
         this.historyId = historyId;
     }
@@ -32,12 +32,12 @@ public class History {
         this.historyCtime = historyCtime;
     }
 
-    public Integer getHistorySubject() {
-        return historySubject;
+    public String getHistorySubjectName() {
+        return historySubjectName;
     }
 
-    public void setHistorySubject(Integer historySubject) {
-        this.historySubject = historySubject;
+    public void setHistorySubjectName(String historySubjectName) {
+        this.historySubjectName = historySubjectName;
     }
 
     public String getHistoryTitle() {
