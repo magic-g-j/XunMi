@@ -9,6 +9,14 @@ class postEntity {
   int _postsDislikes;
   int _collections;
   int _repliesCount;
+  String _postsUpdateTime;
+  String _postsCtime;
+
+  String get postsUpdateTime => _postsUpdateTime;
+
+  set postsUpdateTime(String value) {
+    _postsUpdateTime = value;
+  }
 
   int get postsId => _postsId;
 
@@ -27,6 +35,8 @@ class postEntity {
     this._postsDislikes,
     this._collections,
     this._repliesCount,
+    this._postsUpdateTime,
+    this._postsCtime,
   );
 
   String get postsTitle => _postsTitle;
@@ -81,5 +91,11 @@ class postEntity {
 
   set postsTitle(String value) {
     _postsTitle = value;
+  }
+
+  String get postsCtime => _postsCtime;
+
+  set postsCtime(String value) {
+    _postsCtime = value;
   }
 }

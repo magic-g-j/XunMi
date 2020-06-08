@@ -6,6 +6,10 @@ class userEntity {
   int userIdentity;
   String userWords;
   String userCtime;
+//  String followCount;
+//  String fansCount;
+//  String subjectCount;
+//  String postCount;
 
   userEntity(
     this.userId,

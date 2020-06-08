@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:seekseek/entity/post.dart';
 import 'package:seekseek/ui/detail.dart';
+import 'package:seekseek/ui/person/person.dart';
+import 'package:seekseek/ui/search.dart';
+import 'package:seekseek/ui/subject.dart';
 
 import '../main.dart';
 
@@ -27,10 +30,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-//    pagelist
-//      ..add(HomePage())
-//      ..add(QuestionPage())
-//      ..add(AnswerPage());
+//  导航栏页面
+    pagelist..add(HomePage())..add(SubjectPage())..add(PersonPage());
     super.initState();
     getPosts();
   }
@@ -57,7 +58,8 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
   getPosts() async {
     var responseBody;
-    var url = 'http://101.132.157.72:8084/posts/myList?userId='+MyApp.userId.toString();
+    var url = 'http://101.132.157.72:8084/posts/myList?userId=' +
+        MyApp.userId.toString();
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();
@@ -77,7 +79,37 @@ class _HomePageState extends State<HomePage> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
-    final search = new Container(
+    final search = GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
+        child: Container(
+            decoration: BoxDecoration(
+              color: Color(0xffeeeeee),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding:
+                      EdgeInsets.only(left: 20, top: 8, right: 10, bottom: 8),
+                  child: Icon(
+                    Icons.search,
+                    color: Colors.grey,
+                    size: 20,
+                  ),
+                ),
+                Text('搜索',
+                    style: new TextStyle(color: Colors.black54, fontSize: 14)),
+              ],
+            )),
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed(SearchPage.tag);
+      },
+    );
+
+//    初始模板
+    new Container(
       color: Colors.blueAccent,
       child: Padding(
         padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -104,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                           controller: controller,
                           decoration: new InputDecoration(
                               contentPadding: EdgeInsets.only(top: 0.0),
-                              hintText: '搜索问题',
+                              hintText: '搜索',
                               border: InputBorder.none),
                           // onChanged: onSearchTextChanged,
                         ),
@@ -202,9 +234,22 @@ class _HomePageState extends State<HomePage> {
           itemCount: posts == null ? 0 : posts.length,
           itemBuilder: (context, i) {
             return GestureDetector(
-              onTap: (){
-//                Navigator.of(context).pushNamed(DetailPage.tag);
-                Navigator.of(context).pushNamed(DetailPage.tag,arguments: postEntity(posts[i]['postsId'],posts[i]['postsTitle'],posts[i]['postsBelongs'],posts[i]['subjectName'],posts[i]['postsCreator'],posts[i]['creatorName'],posts[i]['postsLikes'],posts[i]['postsDislikes'],posts[i]['collections'],posts[i]['repliesCount'],));
+              onTap: () {
+                Navigator.of(context).pushNamed(DetailPage.tag,
+                    arguments: postEntity(
+                      posts[i]['postsId'],
+                      posts[i]['postsTitle'],
+                      posts[i]['postsBelongs'],
+                      posts[i]['subjectName'],
+                      posts[i]['postsCreator'],
+                      posts[i]['creatorName'],
+                      posts[i]['postsLikes'],
+                      posts[i]['postsDislikes'],
+                      posts[i]['collections'],
+                      posts[i]['repliesCount'],
+                      posts[i]['postsUpdateTime'],
+                      posts[i]['postsCtime'],
+                    ));
               },
               child: Container(
                   width: width,
@@ -234,7 +279,10 @@ class _HomePageState extends State<HomePage> {
                             padding:
                                 EdgeInsets.only(left: 20, bottom: 6, right: 20),
 //                            用户名
-                            child: Text("@ "+ posts[i]['creatorName'].toString(),style: new TextStyle(fontSize: 12, color: Colors.blueAccent)),
+                            child: Text(
+                                "@ " + posts[i]['creatorName'].toString(),
+                                style: new TextStyle(
+                                    fontSize: 12, color: Colors.blueAccent)),
                           ),
                           Padding(
                             padding:
@@ -255,7 +303,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 5, right: 20),
-                                  child: Text(posts[i]['repliesCount'].toString(), style: textStyle),
+                                  child: Text(
+                                      posts[i]['repliesCount'].toString(),
+                                      style: textStyle),
                                 ),
                                 Icon(
                                   Icons.thumb_up,
@@ -274,7 +324,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 5, right: 20),
-                                  child: Text(posts[i]['postsDislikes'].toString(),
+                                  child: Text(
+                                      posts[i]['postsDislikes'].toString(),
                                       style: textStyle),
                                 ),
                                 Icon(
@@ -284,7 +335,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 5),
-                                  child: Text(posts[i]['collections'].toString(), style: textStyle),
+                                  child: Text(
+                                      posts[i]['collections'].toString(),
+                                      style: textStyle),
                                 ),
                               ],
                             ),
@@ -292,8 +345,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-                  )
-              ),
+                  )),
             );
           }),
     );
@@ -302,12 +354,16 @@ class _HomePageState extends State<HomePage> {
       await Future.delayed(Duration(seconds: 1), () {
         print('refresh');
         getPosts();
-        setState(() {
-        });
+        setState(() {});
       });
     }
 
     void onTabTapped(int index) {
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return pagelist[index];
+      }));
+      print(index);
       setState(() {
         _currentIndex = index;
       });
@@ -330,8 +386,8 @@ class _HomePageState extends State<HomePage> {
 //          模板
 //          list,
           new RefreshIndicator(
-              onRefresh: _onRefresh,
-              child: postsList,
+            onRefresh: _onRefresh,
+            child: postsList,
           ),
           SizedBox(
             height: 45.0,
