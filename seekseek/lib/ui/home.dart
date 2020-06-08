@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
       responseBody = await response.transform(utf8.decoder).join();
       responseBody = json.decode(responseBody);
       posts = responseBody;
-      print(posts);
+//      print(posts);
     } else {
       print("error");
     }
@@ -78,6 +78,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+
+    getPosts();
 
     final search = GestureDetector(
       child: Padding(

@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:seekseek/common/toastHelper.dart';
 import 'package:seekseek/entity/post.dart';
+import 'package:seekseek/entity/reply.dart';
 import 'package:seekseek/main.dart';
 import 'package:seekseek/ui/reply.dart';
 
@@ -23,12 +24,15 @@ class _DetailPageState extends State<DetailPage> {
   TextStyle textStyle2 = const TextStyle(fontSize: 12, color: Colors.orange);
 
   Color thumbUpColor, thumbDownColor, collectColor;
-  int thumbUpCount = 0, thumbDownCount = 0, collectCount = 0;
+//  Color thumbUpColor2;
+  int thumbUpCount = 0, thumbDownCount = 0, collectCount = 0 ,thumbUpCount2 = 0;
 
   String followText;
 
   List repliesList = [];
   String repliesCount = "0";
+  String likeCount = "0";
+  String dislikeCount = "0";
 
   postEntity postDetail;
   List result;
@@ -43,9 +47,11 @@ class _DetailPageState extends State<DetailPage> {
     thumbUpColor = Colors.grey;
     thumbDownColor = Colors.grey;
     collectColor = Colors.grey;
+//    thumbUpColor2 = Colors.grey;
     thumbUpCount = 0;
     thumbDownCount = 0;
     collectCount = 0;
+    thumbUpCount2 = 0;
     followText = "关注";
   }
 
@@ -81,18 +87,20 @@ class _DetailPageState extends State<DetailPage> {
         Response response;
         Dio dio = new Dio();
 //      Dio dio = new Dio(options);
-        if(replyContent ==null || replyContent==""){
+        if (replyContent == null || replyContent == "") {
           ToastHelper.showToast(context, "内容不能为空");
-        }
-        else{
-          response = await dio.post("http://101.132.157.72:8084/reply/add",data: {
-            "replyParent":postId,
-            "replyParentType":0,
-            "replyCreator":MyApp.userId,
-            "replyContent":replyContent,
-          }, );
+        } else {
+          response = await dio.post(
+            "http://101.132.157.72:8084/reply/add",
+            data: {
+              "replyParent": postId,
+              "replyParentType": 0,
+              "replyCreator": MyApp.userId,
+              "replyContent": replyContent,
+            },
+          );
           if (response.statusCode == 200) {
-            print("reply"+response.toString());
+            print("reply" + response.toString());
           }
         }
       } catch (exception) {
@@ -120,13 +128,18 @@ class _DetailPageState extends State<DetailPage> {
         if (result[3] == null) {
           postContent = "";
         } else {
-          postContent = result[3].toString();
+          setState(() {
+            postContent = result[3].toString();
+            likeCount = result[6].toString();
+            dislikeCount = result[7].toString();
+          });
         }
+//        likeCount = result[6].toString();
+//        dislikeCount = result[7].toString();
 //        print(postsCtime);
       } else {
         print("error");
       }
-      setState(() {});
     }
 
 //TODO 点赞\踩数更新 查看子回复传参
@@ -136,8 +149,7 @@ class _DetailPageState extends State<DetailPage> {
       response = await dio.get(
           "http://101.132.157.72:8084/posts/likeAndDislike/modify?postsId=" +
               postId.toString() +
-              "&type=1&add=1"
-      );
+              "&type=1&add=1");
     }
 
     thumbUpCancel() async {
@@ -146,8 +158,7 @@ class _DetailPageState extends State<DetailPage> {
       response = await dio.get(
           "http://101.132.157.72:8084/posts/likeAndDislike/modify?postsId=" +
               postId.toString() +
-              "&type=1&add=0"
-      );
+              "&type=1&add=0");
     }
 
     thumbDown() async {
@@ -156,8 +167,7 @@ class _DetailPageState extends State<DetailPage> {
       response = await dio.get(
           "http://101.132.157.72:8084/posts/likeAndDislike/modify?postsId=" +
               postId.toString() +
-              "&type=0&add=1"
-      );
+              "&type=0&add=1");
     }
 
     thumbDownCancel() async {
@@ -166,8 +176,7 @@ class _DetailPageState extends State<DetailPage> {
       response = await dio.get(
           "http://101.132.157.72:8084/posts/likeAndDislike/modify?postsId=" +
               postId.toString() +
-              "&type=0&add=0"
-      );
+              "&type=0&add=0");
     }
 
     getReply() async {
@@ -195,10 +204,9 @@ class _DetailPageState extends State<DetailPage> {
       Dio dio = new Dio();
       Response response;
       response = await dio.get(
-        "http://101.132.157.72:8084/reply/getReplyCount?parentId=" +
-          postId.toString() +
-          "&parentType=0"
-      );
+          "http://101.132.157.72:8084/reply/getReplyCount?parentId=" +
+              postId.toString() +
+              "&parentType=0");
       if (response.statusCode == 200) {
         repliesCount = response.toString();
 //      print(repliesCount);
@@ -239,6 +247,24 @@ class _DetailPageState extends State<DetailPage> {
                     break;
                   case '2':
 //                      删除
+                    delete() async {
+                      Dio dio = new Dio();
+                      Response response;
+                      response = await dio.get(
+                          "http://101.132.157.72:8084/posts/delete?postsId=" +
+                              postDetail.postsId
+                                  .toString()+"&userId="+MyApp.userId.toString());
+                      if(response.toString()=="True"){
+                        ToastHelper.showToast(context, "删除成功");
+                      }
+                    }
+                    if(postDetail.postsCreator == MyApp.userId){
+                      delete();
+                      Navigator.pop(context);
+                    }
+                    else{
+                      ToastHelper.showToast(context, "删除失败：非创建者不能删除");
+                    }
                     break;
                 }
               },
@@ -311,7 +337,8 @@ class _DetailPageState extends State<DetailPage> {
             ),
             Padding(
                 padding: EdgeInsets.only(bottom: 15.0),
-                child: Text(postDetail.postsCtime.toString().split('T')[0], style: textStyle)),
+                child: Text(postDetail.postsCtime.toString().split('T')[0],
+                    style: textStyle)),
             Padding(
                 padding: EdgeInsets.only(bottom: 15.0),
                 child: Text(postContent)),
@@ -326,8 +353,7 @@ class _DetailPageState extends State<DetailPage> {
                         color: Colors.grey,
                         size: 17,
                       ),
-                      Text(repliesCount,
-                          style: textStyle2),
+                      Text(repliesCount, style: textStyle2),
                     ],
                   ),
                 ),
@@ -347,11 +373,15 @@ class _DetailPageState extends State<DetailPage> {
                             print(thumbUpCount);
                             if (thumbUpCount % 2 == 1) {
                               setState(() {
+                                thumbUp();
+                                getDetail();
                                 thumbUpColor = Colors.orange;
 //                                      请求
                               });
                             }
                             if (thumbUpCount % 2 == 0) {
+                              thumbUpCancel();
+                              getDetail();
                               setState(() {
                                 thumbUpColor = Colors.grey;
 //                                        请求
@@ -359,7 +389,7 @@ class _DetailPageState extends State<DetailPage> {
                             }
                           }),
 //TODO 点赞数
-                      Text(postDetail.postsLikes.toString(), style: textStyle2),
+                      Text(likeCount, style: textStyle2),
                     ],
                   ),
                 ),
@@ -379,20 +409,23 @@ class _DetailPageState extends State<DetailPage> {
                             print(thumbDownCount);
                             if (thumbDownCount % 2 == 1) {
                               setState(() {
+                                thumbDown();
+                                getDetail();
                                 thumbDownColor = Colors.orange;
 //                                      请求
                               });
                             }
                             if (thumbDownCount % 2 == 0) {
                               setState(() {
+                                thumbDownCancel();
+                                getDetail();
                                 thumbDownColor = Colors.grey;
 //                                        请求
                               });
                             }
                           }),
 //TODO 踩数
-                      Text(postDetail.postsDislikes.toString(),
-                          style: textStyle2),
+                      Text(dislikeCount, style: textStyle2),
                     ],
                   ),
                 ),
@@ -481,18 +514,58 @@ class _DetailPageState extends State<DetailPage> {
                                   Container(
                                     width: width * 0.78,
                                     child: Text(
-                                      repliesList[i]['replyCreatorName'].toString(),
+                                      repliesList[i]['replyCreatorName']
+                                          .toString(),
                                       style: new TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 16,
                                           color: Colors.blueAccent),
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.thumb_up,
-                                    color: Colors.grey,
-                                    size: 17,
-                                  ),
+                                  GestureDetector(
+                                      child: Icon(
+                                        Icons.thumb_up,
+//                                        color: thumbUpColor2,
+                              color: Colors.grey,
+                                        size: 17,
+                                      ),
+                                      onTap: () {
+                                        print("click2");
+                                        thumbUpCount2++;
+                                        print(thumbUpCount2);
+                                        if (thumbUpCount2 % 2 == 1) {
+                                          thumbUp2() async {
+                                            Dio dio = new Dio();
+                                            Response response;
+                                            response = await dio.get(
+                                                "http://101.132.157.72:8084/reply/likeAndDislike/modify?replyId=" +
+                                                    repliesList[i]['replyId']
+                                                        .toString() +
+                                                    "&type=1&add=1");
+                                          }
+
+                                          thumbUp2();
+                                          setState(() {
+//                                            thumbUpColor2 = Colors.orange;
+                                          });
+                                        }
+                                        if (thumbUpCount2 % 2 == 0) {
+                                          thumbUpCancel2() async {
+                                            Dio dio = new Dio();
+                                            Response response;
+                                            response = await dio.get(
+                                                "http://101.132.157.72:8084/reply/likeAndDislike/modify?replyId=" +
+                                                    repliesList[i]['replyId']
+                                                        .toString() +
+                                                    "&type=1&add=0");
+                                          }
+                                          thumbUpCancel2();
+                                          setState(() {
+//                                            thumbUpColor2 = Colors.grey;
+                                            thumbUpCount2 = 0;
+                                          });
+                                        }
+                                      }),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
                                     child: Text(
@@ -504,18 +577,32 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(bottom: 10),
-                              child: Text(repliesList[i]['replyCtime'].toString().split('T')[0], style: textStyle),
+                              child: Text(
+                                  repliesList[i]['replyCtime']
+                                      .toString()
+                                      .split('T')[0],
+                                  style: textStyle),
                             ),
                             Padding(
                               padding: EdgeInsets.only(bottom: 10),
-                              child: Text(repliesList[i]['replyContent'].toString()),
+                              child: Text(
+                                  repliesList[i]['replyContent'].toString()),
                             ),
                             GestureDetector(
                                 child: Text("回复并查看 >>",
                                     style: new TextStyle(color: Colors.grey)),
                                 onTap: () {
-                                  Navigator.of(context)
-                                      .pushNamed(ReplyPage.tag);
+                                  Navigator.of(context).pushNamed(ReplyPage.tag,
+                                      arguments: replyEntity(
+                                          repliesList[i]['replyId'],
+                                          repliesList[i]['replyParent'],
+                                          repliesList[i]['replyParentType'],
+                                          repliesList[i]['replyCreator'],
+                                          repliesList[i]['replyCreatorName'],
+                                          repliesList[i]['replyContent'],
+                                          repliesList[i]['replyCtime'],
+                                          repliesList[i]['replyLikes'],
+                                          repliesList[i]['replyDislikes']));
                                 }),
                           ],
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -551,11 +638,11 @@ class _DetailPageState extends State<DetailPage> {
                     contentPadding: EdgeInsets.only(top: 0.0),
                     hintText: '回复一下，见证当下……',
                     border: InputBorder.none),
-                onChanged: (value){
+                onChanged: (value) {
                   setState(() {
                     replyContent = value;
                   });
-                },                // onChanged: onSearchTextChanged,
+                }, // onChanged: onSearchTextChanged,
               ),
             ),
           ),

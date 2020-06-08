@@ -569,7 +569,7 @@ class _SubjectHomePageState extends State<SubjectHomePage> {
     final postsList2 = Offstage(
       offstage: hidden2,
       child: Container(
-        height: height - 220,
+        height: height - 200,
         child: new ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             children: <Widget>[
@@ -722,8 +722,11 @@ class _SubjectHomePageState extends State<SubjectHomePage> {
         shrinkWrap: true,
         children: <Widget>[
           title,
-          search,
+//          search,
 //          teachers,
+          SizedBox(
+            height: 10.0,
+          ),
           sort,
           new RefreshIndicator(
             onRefresh: _onRefresh,
@@ -732,9 +735,6 @@ class _SubjectHomePageState extends State<SubjectHomePage> {
           new RefreshIndicator(
             onRefresh: _onRefresh,
             child: postsList2,
-          ),
-        SizedBox(
-            height: 45.0,
           ),
 //        pagelist[_currentIndex],
         ],
