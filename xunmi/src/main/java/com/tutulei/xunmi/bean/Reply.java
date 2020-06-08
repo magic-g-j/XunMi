@@ -7,10 +7,19 @@ public class Reply {
     private Integer replyParent;
     private Byte replyParentType;
     private Integer replyCreator;
+    private String replyCreatorName;
     private String replyContent;
     private Timestamp replyCtime;
     private Integer replyLikes;
     private Integer replyDislikes;
+
+    public String getReplyCreatorName() {
+        return replyCreatorName;
+    }
+
+    public void setReplyCreatorName(String replyCreatorName) {
+        this.replyCreatorName = replyCreatorName;
+    }
 
     public int getReplyId() {
         return replyId;

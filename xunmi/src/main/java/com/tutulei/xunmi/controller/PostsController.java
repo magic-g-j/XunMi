@@ -70,6 +70,26 @@ public class PostsController {
         posts.setPostsId(-1);
         return posts;
     }
+
+    //通过用户id，获取给用户推荐的帖子列表
+    //用户推荐规则：根据历史记录中用户访问的帖子，列出频繁访问的学科，推荐这些学科的最新帖子
+    @GetMapping("/myList")
+    public List<PostsForList> GetList(@Param("userId") int userId){
+        List<PostsForList> homeList = new ArrayList<>();
+        List<Integer> SubjectList = historyRepository.findHistorySubjectByHistoryUser(userId);
+        while(SubjectList.size()<5){
+            SubjectList.add(-11);
+        }
+        List<PostsEntity> entityList = postsRepository.findRecommendPosts(SubjectList.get(0),SubjectList.get(1),SubjectList.get(2),SubjectList.get(3),SubjectList.get(4));
+        while(entityList.size()<12){
+            List<PostsEntity> addList = postsRepository.findNewPosts(12-entityList.size());
+            entityList.addAll(addList);
+        }
+        turnToListItem(entityList, homeList);
+        return homeList;
+    }
+
+
     //获取某学科圈的帖子列表(按回复时间排序)
     @GetMapping("/getListForSubject/updateTime")
     public List<PostsForList>  GetListForSubjectOrderByUpdateTime(@Param("subjectId")int subjectId){
@@ -113,23 +133,46 @@ public class PostsController {
         return repository.countByPostsCreator(userId);
     }
 
-    //通过用户id，获取给用户推荐的帖子列表
-    //用户推荐规则：根据历史记录中用户访问的帖子，列出频繁访问的学科，推荐这些学科的最新帖子
-    @GetMapping("/myList")
-    public List<PostsForList> GetList(@Param("userId") int userId){
-        List<PostsForList> homeList = new ArrayList<>();
-        List<Integer> SubjectList = historyRepository.findHistorySubjectByHistoryUser(userId);
-        while(SubjectList.size()<5){
-            SubjectList.add(-11);
+    //为帖子点赞(操作规则 type=true代表like，false代表dislike，add=true代表添加，false代表取消)
+    @GetMapping("/likeAndDislike/modify")
+    public boolean Like(@Param("postsId")Integer postsId,@Param("type")boolean type,@Param("add")boolean add){
+        PostsEntity postsEntity = repository.findByPostsId(postsId);
+        if(postsEntity!=null){
+            if(type&&add){
+                postsEntity.setPostsLikes(postsEntity.getPostsLikes()+1);
+            }else if(type){
+                postsEntity.setPostsLikes(postsEntity.getPostsLikes()-1);
+            }else if(add){
+                postsEntity.setPostsDislikes(postsEntity.getPostsDislikes()+1);
+            }else {
+                postsEntity.setPostsDislikes(postsEntity.getPostsDislikes()-1);
+            }
+            repository.saveAndFlush(postsEntity);
+            return true;
         }
-        List<PostsEntity> entityList = postsRepository.findRecommendPosts(SubjectList.get(0),SubjectList.get(1),SubjectList.get(2),SubjectList.get(3),SubjectList.get(4));
-        while(entityList.size()<12){
-            List<PostsEntity> addList = postsRepository.findNewPosts(12-entityList.size());
-            entityList.addAll(addList);
-        }
-        turnToListItem(entityList, homeList);
-        return homeList;
+        return false;
     }
+
+
+//=========================================================================
+    //搜索帖子 根据帖子标题和内容。(按热度)
+    @GetMapping("/search/updateTime")
+    public List<PostsForList> SearchOrderByUpdateTime(@Param("key")String key){
+        List<PostsForList> list = new ArrayList<>();
+        List<PostsEntity> postsEntities = repository.searchPostsWithFullTextOrderByPostsUpdateTime(key);
+        turnToListItem(postsEntities, list);
+        return list;
+    }
+    //搜索帖子 根据帖子标题和内容。(按时间)
+    @GetMapping("/search/createTime")
+    public List<PostsForList> SearchOrderByCreateTime(@Param("key")String key){
+        List<PostsForList> list = new ArrayList<>();
+        List<PostsEntity> postsEntities = repository.searchPostsWithFullTextOrderByPostsCtime(key);
+        turnToListItem(postsEntities, list);
+        return list;
+    }
+
+
     private void turnToListItem(List<PostsEntity> postsEntities, List<PostsForList> postsForLists) {
         for(PostsEntity p:postsEntities){
             PostsForList item = new PostsForList();

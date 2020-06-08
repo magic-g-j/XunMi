@@ -3,27 +3,31 @@ package com.tutulei.xunmi.controller;
 import com.tutulei.xunmi.bean.Reply;
 import com.tutulei.xunmi.entity.PostsEntity;
 import com.tutulei.xunmi.entity.ReplyEntity;
+import com.tutulei.xunmi.entity.UserEntity;
 import com.tutulei.xunmi.repository.PostsRepository;
 import com.tutulei.xunmi.repository.ReplyRepository;
+import com.tutulei.xunmi.repository.UserRepository;
 import com.tutulei.xunmi.view.ReplyMsg;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/reply")
 public class ReplyController {
     private final ReplyRepository repository;
     private final PostsRepository postsRepository;
-    ReplyController(ReplyRepository replyRepository,PostsRepository postsRepository){
+    private final UserRepository userRepository;
+
+    ReplyController(ReplyRepository replyRepository,PostsRepository postsRepository,UserRepository userRepository){
         this.repository = replyRepository;
-        this.postsRepository = postsRepository;}
+        this.postsRepository = postsRepository;
+        this.userRepository = userRepository;
+    }
 
     //列出帖子或者回复的回复（type: 0代表帖子，1代表回复）
     @GetMapping("/listReply")
@@ -36,12 +40,14 @@ public class ReplyController {
         for (ReplyEntity replyEntity : replyEntities) {
             Reply reply = new Reply();
             BeanUtils.copyProperties(replyEntity, reply);
+            UserEntity userEntity = userRepository.findByUserId(reply.getReplyCreator());
+            reply.setReplyCreatorName(userEntity.getUserName());
             replies.add(reply);
         }
         return replies;
     }
     //回复
-    @PostMapping("/reply")
+    @PostMapping("/add")
     public boolean Reply(@RequestBody ReplyMsg replyMsg) {
         if(replyMsg.getReplyParentType() == 1){
             ReplyEntity replyEntity = repository.findByReplyId(replyMsg.getReplyParent());
@@ -60,6 +66,10 @@ public class ReplyController {
         replyEntity.setReplyCtime(time);
         replyEntity.setReplyLikes(0);
         replyEntity.setReplyDislikes(0);
+        byte t = 1;
+        byte f = 0;
+        Byte pt = (replyMsg.getReplyParentType() == 1) ? t : f;
+        replyEntity.setReplyParentType(pt);
         repository.save(replyEntity);
         updatePostsUpdateTime(replyMsg.getReplyParent(),replyMsg.getReplyParentType(),time);
         return true;
@@ -83,11 +93,36 @@ public class ReplyController {
         }
         return count;
     }
-
+    //为帖子点赞(操作规则 type=true代表like，false代表dislike，add=true代表添加，false代表取消)
+    @GetMapping("likeAndDislike/modify")
+    public boolean Like(@Param("replyId")Integer replyId,@Param("type")boolean type,@Param("add")boolean add){
+        ReplyEntity replyEntity = repository.findByReplyId(replyId);
+        if(replyEntity!=null){
+            if(type&&add){
+                replyEntity.setReplyLikes(replyEntity.getReplyLikes()+1);
+            }else if(type){
+                replyEntity.setReplyLikes(replyEntity.getReplyLikes()-1);
+            }else if(add){
+                replyEntity.setReplyDislikes(replyEntity.getReplyDislikes()+1);
+            }else {
+                replyEntity.setReplyDislikes(replyEntity.getReplyDislikes()-1);
+            }
+            repository.saveAndFlush(replyEntity);
+            return true;
+        }
+        return false;
+    }
 
     private void updatePostsUpdateTime(Integer id,Integer type,Timestamp time){
         if(type == 1){
-
+            //回复
+            ReplyEntity replyEntity = repository.findByReplyId(id);
+            updatePostsUpdateTime(replyEntity.getReplyParent(),(int) replyEntity.getReplyParentType(),time);
+        } else{
+            //帖子
+            PostsEntity postsEntity = postsRepository.findByPostsId(id);
+            postsEntity.setPostsUpdateTime(new Timestamp(System.currentTimeMillis()));
+            postsRepository.saveAndFlush(postsEntity);
         }
     }
 }

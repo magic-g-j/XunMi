@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -27,7 +29,7 @@ public class UserController {
     private final UserRepository repository;
     private static final String salt_part = "jh";
     UserController(UserRepository repository){this.repository = repository;}
-
+    //根据用户Id获取用户信息
     @GetMapping("/getOne")
     User GetOne(@Param("userId") int userId){
         UserEntity userEntity = repository.findByUserId(userId);
@@ -144,8 +146,19 @@ public class UserController {
 //            response.getOutputStream().flush();
         } catch (IOException e) {
         }
-
         return null;
+    }
+    //搜索用户根据名称
+    @GetMapping("/search")
+    public List<User> Search(@Param("key")String key){
+        List<UserEntity> userEntities = repository.findByUserNameLike("%"+key+"%");
+        List<User> list = new ArrayList<>();
+        for(UserEntity userEntity : userEntities){
+            User user = new User();
+            BeanUtils.copyProperties(userEntity,user);
+            list.add(user);
+        }
+        return list;
     }
 
     private String GETIP(HttpServletRequest request){

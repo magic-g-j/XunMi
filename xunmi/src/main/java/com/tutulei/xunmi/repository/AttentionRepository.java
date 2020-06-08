@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface AttentionRepository extends JpaRepository<AttentionEntity,Integer> {
     List<AttentionEntity> findByAttentionUser(int user);
+    List<AttentionEntity> findByAttentionSubjectLike(String key);
+
     Integer countByAttentionUser(int user);
 }

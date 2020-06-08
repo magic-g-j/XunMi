@@ -26,4 +26,11 @@ public interface PostsRepository extends JpaRepository<PostsEntity,Integer> {
 
     @Query(value = "select * from posts WHERE posts_id IN (:list) ORDER BY field(posts_id,:list)",nativeQuery = true)
     List<PostsEntity> findByPostsIdIn(@Param("list") List<Integer> list);
+
+    @Query(value = "SELECT * FROM posts WHERE MATCH (posts_title,posts_content) AGAINST (:k IN NATURAL LANGUAGE MODE) Order BY posts_ctime DESC",nativeQuery = true)
+    List<PostsEntity> searchPostsWithFullTextOrderByPostsCtime(@Param("k") String k);
+
+    @Query(value = "SELECT * FROM posts WHERE MATCH (posts_title,posts_content) AGAINST (:k IN NATURAL LANGUAGE MODE) Order BY posts_update_time DESC",nativeQuery = true)
+    List<PostsEntity> searchPostsWithFullTextOrderByPostsUpdateTime(@Param("k") String k);
+
 }
