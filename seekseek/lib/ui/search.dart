@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:seekseek/entity/post.dart';
 import 'package:seekseek/entity/subject.dart';
+import 'package:seekseek/ui/person/personalHome.dart';
 import 'package:seekseek/ui/subject.dart';
 import 'package:seekseek/ui/subjectHome.dart';
 
@@ -744,9 +745,8 @@ class _SearchPageState extends State<SearchPage> {
             itemBuilder: (context, i) {
               return GestureDetector(
                 onTap: () {
-//                  Navigator.of(context).pushNamed(SubjectHomePage.tag,
-//                      arguments: subjectEntity(subjects[i]['subjectId'],
-//                          subjects[i]['subjectName']));
+                  Navigator.of(context).pushNamed(PersonalHomePage.tag,
+                      arguments: users[i]['userId']);
                 },
                 child: Container(
                     width: width,

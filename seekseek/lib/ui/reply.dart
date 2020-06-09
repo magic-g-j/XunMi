@@ -188,7 +188,7 @@ class _ReplyPageState extends State<ReplyPage> {
                           "http://101.132.157.72:8084/reply/delete?replyId=" +
                               replyDetail.replyId
                                   .toString()+"&userId="+MyApp.userId.toString());
-                      if(response.toString()=="True"){
+                      if(response.toString()=="true"){
                         ToastHelper.showToast(context, "删除成功");
                       }
                     }
@@ -338,7 +338,7 @@ class _ReplyPageState extends State<ReplyPage> {
                                                     repliesList[i]['replyId']
                                                         .toString()+"&userId="+MyApp.userId.toString());
                                             print(response.toString());
-                                            if(response.toString()=="True"){
+                                            if(response.toString()=="true"){
                                               ToastHelper.showToast(context, "删除成功");
                                             }
                                           }

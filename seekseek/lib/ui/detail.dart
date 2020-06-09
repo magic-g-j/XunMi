@@ -254,7 +254,7 @@ class _DetailPageState extends State<DetailPage> {
                           "http://101.132.157.72:8084/posts/delete?postsId=" +
                               postDetail.postsId
                                   .toString()+"&userId="+MyApp.userId.toString());
-                      if(response.toString()=="True"){
+                      if(response.toString()=="true"){
                         ToastHelper.showToast(context, "删除成功");
                       }
                     }

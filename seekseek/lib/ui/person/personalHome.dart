@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:seekseek/common/toastHelper.dart';
 import 'package:seekseek/entity/post.dart';
 import 'package:seekseek/entity/subject.dart';
 import 'package:seekseek/ui/detail.dart';
@@ -45,6 +46,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
       hidden42,
       hiddenIdentity,
       hiddenFollowBtn,
+//      hiddenFollowBtn2,
       hiddenFollows,
       hiddenFans;
 
@@ -56,10 +58,14 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
   List posts = [];
   List posts2 = [];
 
+  int visitUserId;
+
   getUser() async {
     var responseBody;
+//    var url = 'http://101.132.157.72:8084/user/getOne?userId=' +
+//        MyApp.userId.toString();
     var url = 'http://101.132.157.72:8084/user/getOne?userId=' +
-        MyApp.userId.toString();
+        visitUserId.toString();
     var httpClient = new HttpClient();
 //    print("user"+MyApp.userId.toString()+url);
     var request = await httpClient.getUrl(Uri.parse(url));
@@ -93,13 +99,15 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getFollow() async {
     var responseBody;
+//    var url = 'http://101.132.157.72:8084/follow/getMasters?userId=' +
+//        MyApp.userId.toString();
     var url = 'http://101.132.157.72:8084/follow/getMasters?userId=' +
-        MyApp.userId.toString();
+        visitUserId.toString();
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();
@@ -112,15 +120,19 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getFollowCount() async {
     Dio dio = new Dio();
     Response response;
+//    response = await dio.get(
+//      "http://101.132.157.72:8084/follow/getCount?userId=" +
+//          MyApp.userId.toString(),
+//    );
     response = await dio.get(
       "http://101.132.157.72:8084/follow/getCount?userId=" +
-          MyApp.userId.toString(),
+          visitUserId.toString(),
     );
     if (response.statusCode == 200) {
       followCount = response.toString();
@@ -128,13 +140,15 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getFans() async {
     var responseBody;
+//    var url = 'http://101.132.157.72:8084/follow/getSlaves?userId=' +
+//        MyApp.userId.toString();
     var url = 'http://101.132.157.72:8084/follow/getSlaves?userId=' +
-        MyApp.userId.toString();
+        visitUserId.toString();
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();
@@ -147,15 +161,19 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getFansCount() async {
     Dio dio = new Dio();
     Response response;
+//    response = await dio.get(
+//      "http://101.132.157.72:8084/follow/getSlaveCount?userId=" +
+//          MyApp.userId.toString(),
+//    );
     response = await dio.get(
       "http://101.132.157.72:8084/follow/getSlaveCount?userId=" +
-          MyApp.userId.toString(),
+          visitUserId.toString(),
     );
     if (response.statusCode == 200) {
       fansCount = response.toString();
@@ -163,13 +181,15 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getSubject() async {
     var responseBody;
+//    var url = 'http://101.132.157.72:8084/subject/getList?userId=' +
+//        MyApp.userId.toString();
     var url = 'http://101.132.157.72:8084/subject/getList?userId=' +
-        MyApp.userId.toString();
+        visitUserId.toString();
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();
@@ -181,15 +201,19 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getSubjectCount() async {
     Dio dio = new Dio();
     Response response;
+//    response = await dio.get(
+//      "http://101.132.157.72:8084/subject/getCount?userId=" +
+//          MyApp.userId.toString(),
+//    );
     response = await dio.get(
       "http://101.132.157.72:8084/subject/getCount?userId=" +
-          MyApp.userId.toString(),
+          visitUserId.toString(),
     );
     if (response.statusCode == 200) {
       subjectCount = response.toString();
@@ -197,14 +221,17 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getPosts() async {
     var responseBody;
+//    var url =
+//        'http://101.132.157.72:8084/posts/getListForMe/createTime?userId=' +
+//            MyApp.userId.toString();
     var url =
         'http://101.132.157.72:8084/posts/getListForMe/createTime?userId=' +
-            MyApp.userId.toString();
+            visitUserId.toString();
 //    print("post"+MyApp.userId.toString()+url);
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
@@ -217,14 +244,17 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getPosts2() async {
     var responseBody;
+//    var url =
+//        'http://101.132.157.72:8084/posts/getListForMe/updateTime?userId=' +
+//            MyApp.userId.toString();
     var url =
         'http://101.132.157.72:8084/posts/getListForMe/updateTime?userId=' +
-            MyApp.userId.toString();
+            visitUserId.toString();
 //    print("post"+MyApp.userId.toString()+url);
     var httpClient = new HttpClient();
     var request = await httpClient.getUrl(Uri.parse(url));
@@ -237,17 +267,19 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     } else {
       print("error");
     }
-    setState(() {
-      posts2 = responseBody;
-    });
+//    setState(() {    });
   }
 
   getPostCount() async {
     Dio dio = new Dio();
     Response response;
+//    response = await dio.get(
+//      "http://101.132.157.72:8084/posts/getListForMe/count?userId=" +
+//          MyApp.userId.toString(),
+//    );
     response = await dio.get(
       "http://101.132.157.72:8084/posts/getListForMe/count?userId=" +
-          MyApp.userId.toString(),
+          visitUserId.toString(),
     );
     if (response.statusCode == 200) {
       postCount = response.toString();
@@ -256,6 +288,103 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
       print("error");
     }
     setState(() {});
+  }
+
+  follow() async {
+    try {
+      Response response;
+      Dio dio = new Dio();
+      response = await dio.post(
+        "http://101.132.157.72:8084/follow/addOne?master=" +
+            visitUserId.toString() +
+            "&slave=" +
+            MyApp.userId.toString(),
+      );
+      if (response.toString() == "true") {
+        ToastHelper.showToast(context, "关注成功");
+//        setState(() {
+//          hiddenFollowBtn = true;
+//          hiddenFollowBtn2 = false;
+//          followText = "已关注";
+//        });
+      }
+    } catch (exception) {
+      print('exc:$exception');
+    }
+  }
+
+  followCancel() async {
+    try {
+      Response response;
+      Dio dio = new Dio();
+      response = await dio.post(
+        "http://101.132.157.72:8084/follow/deleteOne?master=" +
+            visitUserId.toString() +
+            "&slave=" +
+            MyApp.userId.toString(),
+      );
+      if (response.toString() == "true") {
+        ToastHelper.showToast(context, "取消关注成功");
+//        setState(() {
+//          hiddenFollowBtn = false;
+//          hiddenFollowBtn2 = true;
+//          followText = "关注";
+//        });
+      }
+    } catch (exception) {
+      print('exc:$exception');
+    }
+//    setState(() {});
+  }
+
+  getFollowState() async {
+    Dio dio = new Dio();
+    Response response;
+//    response = await dio.get(
+//      "http://101.132.157.72:8084/posts/getListForMe/count?userId=" +
+//          MyApp.userId.toString(),
+//    );
+    response = await dio.get(
+      "http://101.132.157.72:8084/follow/getState?me=" +
+          MyApp.userId.toString() +
+          "&he=" +
+          visitUserId.toString(),
+    );
+    if (response.statusCode == 200) {
+//      无关系
+      if (response.toString() == "0") {
+        setState(() {
+//          hiddenFollowBtn = false;
+//          hiddenFollowBtn2 = true;
+          followText = "关注";
+        });
+      } else if (response.toString() == "1") {
+//        我关注他
+        setState(() {
+//          hiddenFollowBtn = true;
+//          hiddenFollowBtn2 = false;
+          followText = "已关注";
+        });
+      }else if (response.toString() == "2") {
+//        互关
+        setState(() {
+//          hiddenFollowBtn = true;
+//          hiddenFollowBtn2 = false;
+          followText = "关注";
+        });
+            }
+      else if (response.toString() == "3") {
+//        互关
+        setState(() {
+//          hiddenFollowBtn = true;
+//          hiddenFollowBtn2 = false;
+          followText = "已关注";
+        });
+      }
+//      print("post" + postCount);
+    } else {
+      print("error");
+    }
   }
 
   @override
@@ -271,6 +400,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     hidden42 = true;
     hiddenIdentity = true;
     hiddenFollowBtn = false;
+//    hiddenFollowBtn2 = false;
     hiddenFollows = true;
     hiddenFans = true;
 //    需改为变量
@@ -295,6 +425,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     getPosts();
     getPosts2();
     getPostCount();
+//    getFollowState();
   }
 
 //  int index = 0;
@@ -303,6 +434,15 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+
+    //TODO 关注
+    visitUserId = (ModalRoute.of(context).settings.arguments != null)
+        ? ModalRoute.of(context).settings.arguments
+        : MyApp.userId;
+    hiddenFollowBtn = (visitUserId == MyApp.userId) ? true : false;
+//    hiddenFollowBtn2 = (visitUserId == MyApp.userId) ? true : false;
+
+//    print("visit"+visitUserId.toString());
 
 //TODO 页内实时加载
     getSubject();
@@ -316,6 +456,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
     getPosts();
     getPosts2();
     getPostCount();
+    getFollowState();
 
     final title = new PreferredSize(
         child: AppBar(
@@ -351,9 +492,8 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
             itemBuilder: (context, i) {
               return GestureDetector(
                 onTap: () {
-//                  Navigator.of(context).pushNamed(SubjectHomePage.tag,
-//                      arguments: subjectEntity(subjects[i]['subjectId'],
-//                          subjects[i]['subjectName']));
+                  Navigator.of(context).pushNamed(PersonalHomePage.tag,
+                      arguments: follows[i]['userId']);
                 },
                 child: Container(
                     width: width,
@@ -405,9 +545,8 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
             itemBuilder: (context, i) {
               return GestureDetector(
                 onTap: () {
-//                  Navigator.of(context).pushNamed(SubjectHomePage.tag,
-//                      arguments: subjectEntity(subjects[i]['subjectId'],
-//                          subjects[i]['subjectName']));
+                  Navigator.of(context).pushNamed(PersonalHomePage.tag,
+                      arguments: fans[i]['userId']);
                 },
                 child: Container(
                     width: width,
@@ -513,7 +652,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
       offstage: hidden41, //这里控制
       child: Container(
         height: height - 345,
-        child:ListView.builder(
+        child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: posts == null ? 0 : posts.length,
             itemBuilder: (context, i) {
@@ -540,24 +679,22 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                     decoration: BoxDecoration(
                       border: Border(
                           bottom: BorderSide(
-                            width: 3,
-                            color: Color(0xffeeeeee),
-                          )),
+                        width: 3,
+                        color: Color(0xffeeeeee),
+                      )),
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(top: 15, bottom: 15),
                       child: Container(
                         width: width,
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.only(
                                   left: 20, bottom: 6, right: 20),
 //                            学科
-                              child: Text(
-                                  posts[i]['subjectName'].toString(),
+                              child: Text(posts[i]['subjectName'].toString(),
                                   style: new TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16)),
@@ -566,22 +703,21 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                               padding: EdgeInsets.only(
                                   left: 20, bottom: 6, right: 20),
 //                            用户名
-                              child: Text(posts[i]['postsTitle']
-                                          .toString()),
+                              child: Text(posts[i]['postsTitle'].toString()),
                             ),
                             Padding(
                               padding: EdgeInsets.only(
                                   left: 20, bottom: 6, right: 20),
 //                            标题
                               child: Text(
-                                  posts[i]['postsCtime'].toString().split('T')[0],
+                                  posts[i]['postsCtime']
+                                      .toString()
+                                      .split('T')[0],
                                   style: new TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey)),
+                                      fontSize: 12, color: Colors.grey)),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(
-                                  left: 20, right: 20),
+                              padding: EdgeInsets.only(left: 20, right: 20),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
@@ -590,11 +726,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts[i]['repliesCount']
-                                            .toString(),
+                                        posts[i]['repliesCount'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -603,11 +738,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts[i]['postsLikes']
-                                            .toString(),
+                                        posts[i]['postsLikes'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -616,11 +750,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts[i]['postsDislikes']
-                                            .toString(),
+                                        posts[i]['postsDislikes'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -631,8 +764,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
                                     child: Text(
-                                        posts[i]['collections']
-                                            .toString(),
+                                        posts[i]['collections'].toString(),
                                         style: textStyle),
                                   ),
                                 ],
@@ -644,13 +776,14 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                     )),
               );
             }),
-      ),);
+      ),
+    );
 
     final postsList2 = Offstage(
       offstage: hidden42, //这里控制
       child: Container(
         height: height - 345,
-        child:ListView.builder(
+        child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: posts2 == null ? 0 : posts2.length,
             itemBuilder: (context, i) {
@@ -677,24 +810,22 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                     decoration: BoxDecoration(
                       border: Border(
                           bottom: BorderSide(
-                            width: 3,
-                            color: Color(0xffeeeeee),
-                          )),
+                        width: 3,
+                        color: Color(0xffeeeeee),
+                      )),
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(top: 15, bottom: 15),
                       child: Container(
                         width: width,
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.only(
                                   left: 20, bottom: 6, right: 20),
 //                            学科
-                              child: Text(
-                                  posts2[i]['subjectName'].toString(),
+                              child: Text(posts2[i]['subjectName'].toString(),
                                   style: new TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16)),
@@ -710,14 +841,15 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                   left: 20, bottom: 6, right: 20),
 //                            标题
                               child: Text(
-                                  "最后回复于："+posts2[i]['postsUpdateTime'].toString().split('T')[0],
+                                  "最后回复于：" +
+                                      posts2[i]['postsUpdateTime']
+                                          .toString()
+                                          .split('T')[0],
                                   style: new TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey)),
+                                      fontSize: 12, color: Colors.grey)),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(
-                                  left: 20, right: 20),
+                              padding: EdgeInsets.only(left: 20, right: 20),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
@@ -726,11 +858,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts2[i]['repliesCount']
-                                            .toString(),
+                                        posts2[i]['repliesCount'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -739,11 +870,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts2[i]['postsLikes']
-                                            .toString(),
+                                        posts2[i]['postsLikes'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -752,11 +882,10 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                     size: 17,
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 5, right: 20),
+                                    padding:
+                                        EdgeInsets.only(left: 5, right: 20),
                                     child: Text(
-                                        posts2[i]['postsDislikes']
-                                            .toString(),
+                                        posts2[i]['postsDislikes'].toString(),
                                         style: textStyle),
                                   ),
                                   Icon(
@@ -767,8 +896,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
                                     child: Text(
-                                        posts2[i]['collections']
-                                            .toString(),
+                                        posts2[i]['collections'].toString(),
                                         style: textStyle),
                                   ),
                                 ],
@@ -780,74 +908,84 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                     )),
               );
             }),
-      ),);
+      ),
+    );
 
     final sort = Offstage(
-      offstage: hidden40,
-      child: Container(
-        height: 50,
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: width*0.5,
-              padding:
-              EdgeInsets.only(top: 15,bottom: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding:
-                    EdgeInsets.only(left: 20,right: 10),
-                    child: Icon(Icons.sort,size: 20,color: cTimeSortColor,),
-                  ),
-                  GestureDetector(
-                    child: Text("时间",style: TextStyle(color: cTimeSortColor),),
-                    onTap: (){
-                      print("click csort");
-                      setState(() {
-                        cTimeSortColor = Colors.orange;
-                        updateTimeSortColor = Colors.grey;
-                        hidden41 = false;
-                        hidden42 = true;
-                      });
-                      getPosts();
-                    },
-                  ),
-                ],
+        offstage: hidden40,
+        child: Container(
+          height: 50,
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: width * 0.5,
+                padding: EdgeInsets.only(top: 15, bottom: 15),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 10),
+                      child: Icon(
+                        Icons.sort,
+                        size: 20,
+                        color: cTimeSortColor,
+                      ),
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        "时间",
+                        style: TextStyle(color: cTimeSortColor),
+                      ),
+                      onTap: () {
+                        print("click csort");
+                        setState(() {
+                          cTimeSortColor = Colors.orange;
+                          updateTimeSortColor = Colors.grey;
+                          hidden41 = false;
+                          hidden42 = true;
+                        });
+                        getPosts();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              width: width*0.5,
-              padding:
-              EdgeInsets.only(top: 15,bottom: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding:
-                    EdgeInsets.only(left: 20,right: 10),
-                    child: Icon(Icons.sort,size: 20,color: updateTimeSortColor,),
-                  ),
-                  GestureDetector(
-                    child: Text("热度",style: TextStyle(color: updateTimeSortColor),),
-                    onTap: (){
-                      print("click usort");
-                      setState(() {
-                        updateTimeSortColor = Colors.orange;
-                        cTimeSortColor = Colors.grey;
-                        hidden41 = true;
-                        hidden42 = false;
-                      });
-                      getPosts2();
-                    },
-                  ),
-                ],
+              Container(
+                width: width * 0.5,
+                padding: EdgeInsets.only(top: 15, bottom: 15),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 10),
+                      child: Icon(
+                        Icons.sort,
+                        size: 20,
+                        color: updateTimeSortColor,
+                      ),
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        "热度",
+                        style: TextStyle(color: updateTimeSortColor),
+                      ),
+                      onTap: () {
+                        print("click usort");
+                        setState(() {
+                          updateTimeSortColor = Colors.orange;
+                          cTimeSortColor = Colors.grey;
+                          hidden41 = true;
+                          hidden42 = false;
+                        });
+                        getPosts2();
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      )
-    );
+            ],
+          ),
+        ));
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -903,19 +1041,47 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                 ),
                                 onTap: () {
                                   if (followText == "关注") {
-                                    setState(() {
-                                      followText = "已关注";
-                                    });
-//                                    请求
-                                  } else if (followText == "已关注") {
-                                    setState(() {
-                                      followText = "关注";
-                                    });
-//                                    请求
+                                    print("click1");
+                                    follow();
+//                                    setState(() {
+//                                      followText = "已关注";
+//                                    });
+                                  }
+                                  else if (followText == "已关注") {
+                                    print("click2");
+                                    followCancel();
+//                                    setState(() {
+//                                      followText = "关注";
+//                                    });
                                   }
                                 }),
                           ),
                         ),
+//                        Offstage(
+//                          offstage: hiddenFollowBtn2,
+//                          child: Container(
+//                            decoration: BoxDecoration(
+//                              color: Color(0xffe3f1f8),
+//                              border: Border.all(
+//                                  width: 1, color: Color(0xff017cc2)),
+//                              borderRadius: BorderRadius.circular(10.0),
+//                            ),
+//                            child: GestureDetector(
+//                                child: Padding(
+//                                  padding: EdgeInsets.only(
+//                                      left: 8, top: 3, right: 8, bottom: 3),
+//                                  child: Text(followText,
+//                                      style: new TextStyle(
+//                                          fontWeight: FontWeight.w700,
+//                                          fontSize: 12,
+//                                          color: Colors.blueAccent)),
+//                                ),
+//                                onTap: () {
+//                                  followCancel();
+//                                  getFollowState();
+//                                }),
+//                          ),
+//                        ),
                       ],
                     ),
                   ),
@@ -988,8 +1154,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                             hidden40 = true;
                             hidden41 = true;
                             hidden42 = true;
-                          }
-                      ),
+                          }),
                       GestureDetector(
                           child: Container(
                             width: (width - 70) * 0.25,
@@ -999,7 +1164,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                                 Padding(
                                   padding: EdgeInsets.only(bottom: 15),
                                   child: Text(
-                                  fansCount,
+                                    fansCount,
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black54,
@@ -1027,8 +1192,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                             hidden40 = true;
                             hidden41 = true;
                             hidden42 = true;
-                          }
-                      ),
+                          }),
                       GestureDetector(
                           child: Container(
                             width: (width - 70) * 0.25,
@@ -1066,33 +1230,32 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                             hidden40 = true;
                             hidden41 = true;
                             hidden42 = true;
-                          }
-                      ),
+                          }),
                       GestureDetector(
-                        child: Container(
-                          width: (width - 70) * 0.25,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 15),
-                                child: Text(
-                                  postCount,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.w900,
+                          child: Container(
+                            width: (width - 70) * 0.25,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 15),
+                                  child: Text(
+                                    postCount,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.w900,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Text(
-                                "帖子",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black54),
-                              ),
-                            ],
+                                Text(
+                                  "帖子",
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.black54),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                           onTap: () {
                             print("click posts");
                             setState(() {
@@ -1105,8 +1268,7 @@ class _PersonalHomePageState extends State<PersonalHomePage> {
                             hidden1 = true;
                             hidden2 = true;
                             hidden3 = true;
-                          }
-                      ),
+                          }),
                     ],
                   )
                 ],

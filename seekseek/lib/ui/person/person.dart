@@ -79,7 +79,7 @@ class _PersonPageState extends State<PersonPage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getFansCount() async {
@@ -95,7 +95,7 @@ class _PersonPageState extends State<PersonPage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getSubjectCount() async {
@@ -111,7 +111,7 @@ class _PersonPageState extends State<PersonPage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   getPostCount() async {
@@ -127,7 +127,7 @@ class _PersonPageState extends State<PersonPage> {
     } else {
       print("error");
     }
-    setState(() {});
+//    setState(() {});
   }
 
   @override
